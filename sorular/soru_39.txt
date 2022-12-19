@@ -1,0 +1,5 @@
+5 makinenin 5 cihaz uretmesi 5 dakika suruyorsa 100 makinenin 100 cihaz uretmesi ne kadar surer?
+A- 5 dakika
+B- 25 dakika
+C- 1 saat
+D- 1 saat 40 dakika
