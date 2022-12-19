@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <windows.h>
+#include <ctype.h>
 
-void SoruSec(int sayi)
+void selectQuestion(int number)
 {
 
-    char soruSayisi[12];
-    snprintf(soruSayisi, 12, "soru_%d.txt", sayi);
+    char questionText[20];
+    snprintf(questionText, 20, "sorular/soru_%d.txt", number);
 
-    FILE *dosya = fopen(soruSayisi, "r");
+    FILE *dosya = fopen(questionText, "r");
 
     while (!feof(dosya))
     {
@@ -19,96 +21,125 @@ void SoruSec(int sayi)
     fclose(dosya);
 }
 
-int Rand()
+int random()
 {
 
-    int sayi;
+    int number;
 
     srand(time(NULL));
 
-    sayi = rand() % 7;
+    number = rand() % 51;
 
-    return sayi;
+    return number;
 }
 
-char Cevap(int sayi)
+char correntAnswer(int number)
 {
 
-    char cevaplar[] = {'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'};
+    char answers[] = {'C', 'D', 'B', 'D', 'B', 'D', 'D', 'A', 'B', 'B',
+                      'C', 'A', 'C', 'B', 'C', 'B', 'D', 'A', 'C', 'D',
+                      'B', 'B', 'C', 'D', 'D', 'C', 'B', 'C', 'D', 'A',
+                      'B', 'A', 'B', 'D', 'B', 'C', 'A', 'B', 'D', 'D',
+                      'D', 'B', 'B', 'C', 'D', 'B', 'A', 'C', 'A', 'C'};
 
-    return cevaplar[sayi];
+    return answers[number - 1];
 }
 
-int kontrolDizi[10];
+int controlArray[10];
 
-bool kontrol(int sayi, int cikacakSoru)
+bool controlAnswers(int number, int numberOfQuestion)
 {
 
     for (int i = 0; i < 10; i++)
     {
-        if (kontrolDizi[i] == sayi)
+        if (controlArray[i] == number)
         {
             return false;
         }
     }
-    kontrolDizi[cikacakSoru] = sayi;
+    controlArray[numberOfQuestion] = number;
 
-    for (int i = 0; i < 10; i++)
-    {
-        printf("dizinin elemani %d\n", kontrolDizi[i]);
-    }
     return true;
 }
 
 int main()
 {
-    int cikacakSoru = 0;
-    char cevap;
-    char kullaniciCevap;
-    int soruSayi;
+    int numberOfQuestion = 0;
+    char correctAnswer;
+    char userAnswer;
+    int randomNumber;
 
-    printf("Kim Milyoner Olmak Ister'e hos geldiniz.\n");
-    printf("Yarismamiz 5 sorudan olusmaktadir.\n");
-    printf("Ilk soru baraj sorusudur sonra bilemediginiz sorulardan q yazarak ayrilma hakkiniz bulunmaktadir.\n");
+    printf("*******Kim Milyoner Olmak Ister'e hos geldiniz.*******\n");
+    Sleep(1000);
+    printf("Yarismamiz 10 sorudan olusmaktadir.\n");
+    Sleep(1000);
+    printf("Istediginiz soruda q yazarak sorudan cekilme hakkiniz bulunmaktadir.\n\n");
+    Sleep(1000);
+    printf("*******1. SORU*******\n");
+    Sleep(1000);
 
-    soruSayi = Rand();
-    printf("sayi %d\n", soruSayi);
-    kontrol(soruSayi, cikacakSoru);
-    SoruSec(soruSayi);
-    cevap = Cevap(soruSayi);
+    randomNumber = random();
+    controlAnswers(randomNumber, numberOfQuestion);
+    selectQuestion(randomNumber);
+    correctAnswer = correntAnswer(randomNumber);
 
     do
     {
         printf("\n");
-        printf("cevabiniz: ");
-        scanf("%s", &kullaniciCevap);
+        // Sleep(1000);
+        printf("Cevabiniz: ");
+        scanf("%s", &userAnswer);
+        userAnswer = toupper(userAnswer);
 
-        cikacakSoru += 1;
-        if (cevap == kullaniciCevap)
+        numberOfQuestion += 1;
+        if (correctAnswer == userAnswer)
         {
-            printf("dogru cevap\n");
-            soruSayi = Rand();
-            printf("cikacak soru %d\n", cikacakSoru);
-            while (!kontrol(soruSayi, cikacakSoru))
+            Sleep(1000);
+            printf("Tebrikler ! Dogru Cevap\n");
+            Sleep(1000);
+            system("cls");
+
+            if (numberOfQuestion == 9)
             {
-                soruSayi = Rand();
+                printf("Son soruya ulastiniz\n");
+                Sleep(1000);
             }
-            SoruSec(soruSayi);
-            cevap = Cevap(soruSayi);
+            else if (numberOfQuestion == 10)
+            {
+                printf("Yarismayi kazanip buyuk odul olan 1.000.000TL'yi kazandiniz tebrikler!");
+                break;
+            }
+
+            randomNumber = random();
+            if (numberOfQuestion != 10)
+            {
+                printf("*******%d. SORU*******\n", numberOfQuestion + 1);
+                Sleep(1000);
+            }
+            while (!controlAnswers(randomNumber, numberOfQuestion))
+            {
+                randomNumber = random();
+            }
+            selectQuestion(randomNumber);
+            correctAnswer = correntAnswer(randomNumber);
         }
-        else if (kullaniciCevap == 'q')
+        else if (userAnswer == 'Q')
         {
-            printf("cekilme basarili");
+            Sleep(1000);
+            printf("Yarismadan cekildiniz.");
+            printf("%d tl kazandiniz. Sonraki yarismada basarilar", (numberOfQuestion - 1) * 1000);
             break;
         }
-
         else
         {
-            printf("yanlis cevap");
+            Sleep(1000);
+            printf("Yanlis cevap ! Elendiniz.Dogru cevap: %c", correctAnswer);
+            Sleep(3000);
+            system("cls");
             break;
         }
 
-    } while (cikacakSoru < 8);
+    } while (numberOfQuestion < 10);
 
     return 0;
 }
