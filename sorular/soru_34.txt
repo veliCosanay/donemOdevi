@@ -1,0 +1,5 @@
+333'un 3 kati, 333'un 3'te birinden kac fazladir?
+A- 0
+B- 222
+C- 555
+D- 888
